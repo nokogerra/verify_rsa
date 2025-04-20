@@ -45,6 +45,7 @@ Use **`--nocertinfo`** to omit displaying the certificate details.
 
 ### Examples  
 It's implied that "verify_rsa" is in $PATH dir.</br>
+
 **Full Verification (Certificate, Key and Chain):**
 ```sh
 $ verify_rsa -c certificate.crt -k key.key -a cachain.crt 
