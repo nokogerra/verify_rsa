@@ -6,96 +6,302 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/spf13/cobra"
+)
+
+var (
+	keyFile    string
+	certFile   string
+	caFiles    string
+	noCertInfo bool
 )
 
 func main() {
-	keyFile := flag.String("key", "", "Path to private key file")
-	certFile := flag.String("cert", "", "Path to certificate file")
-	caFiles := flag.String("cachain", "", "Comma-separated paths to CA chain files (subca.pem,rootca.pem) or to a single file")
-	
-	flag.Parse()
+	var rootCmd = &cobra.Command{
+		Use:   "verify_rsa",
+		Short: "Verify RSA keys and certificates",
+		Long:  "Tool for validating RSA keys, certificate matching, and chain verification",
+		Run: func(cmd *cobra.Command, args []string) {
+			runVerification()
+		},
+	}
 
-	if *certFile == "" {
-		fmt.Println("Error: -cert parameter is required")
-		flag.PrintDefaults()
+	// Flags
+	rootCmd.Flags().StringVarP(&keyFile, "key", "k", "", "Path to private key file")
+	rootCmd.Flags().StringVarP(&certFile, "cert", "c", "", "Path to certificate file (required)")
+	rootCmd.Flags().StringVarP(&caFiles, "cachain", "a", "", "Comma-separated paths to CA chain files")
+	rootCmd.Flags().BoolVar(&noCertInfo, "nocertinfo", false, "Skip detailed certificate output")
+
+	// Sub-command for completion scripts gen
+	var completionCmd = &cobra.Command{
+		Use:   "completion [bash|zsh|powershell]",
+		Short: "Generate shell completion scripts",
+		Long: `To load completions:
+
+Bash:
+  $ source <(verify_rsa completion bash)
+
+  # For permanent use:
+  $ verify_rsa completion bash > /etc/bash_completion.d/verify_rsa
+
+Zsh:
+  $ source <(verify_rsa completion zsh)
+
+  # For permanent use:
+  $ verify_rsa completion zsh > /usr/local/share/zsh/site-functions/_verify_rsa
+
+PowerShell:
+  # For permanent use:
+  PS> verify_rsa completion powershell | Out-String | Invoke-Expression
+`,
+		ValidArgs: []string{"bash", "zsh", "powershell"},
+		Args:      cobra.ExactValidArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			switch args[0] {
+			case "bash":
+				cmd.Root().GenBashCompletion(os.Stdout)
+			case "zsh":
+				cmd.Root().GenZshCompletion(os.Stdout)
+			case "powershell":
+				cmd.Root().GenPowerShellCompletion(os.Stdout)
+			default:
+				fmt.Printf("Unsupported shell type: %s\n", args[0])
+				os.Exit(1)
+			}
+		},
+	}
+
+	rootCmd.AddCommand(completionCmd)
+
+	// --cert is a mandatory flag
+	rootCmd.MarkFlagRequired("cert")
+
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
 		os.Exit(1)
 	}
+}
 
-	// Option 1: all parameters provided
-	if *keyFile != "" && *certFile != "" && *caFiles != "" {
-		fmt.Println("Running full verification (key, cert match, and chain validation)")
-		
-		// 1. Validate key
-		if err := validateKey(*keyFile); err != nil {
-			fmt.Printf("❌ Key validation failed: %v\n", err)
-			os.Exit(1)
-		}
-		fmt.Println("✅ Key is valid")
+func runVerification() {
+    // Certificate details (if not omitted)
+    if !noCertInfo {
+        if err := printCertificateInfo(certFile); err != nil {
+            fmt.Printf("❌ Failed to print certificate info: %v\n", err)
+            os.Exit(1)
+        }
+    }
 
-		// 2. Verify key and certificate match
-		if err := verifyKeyCertMatch(*keyFile, *certFile); err != nil {
-			fmt.Printf("❌ Key and certificate mismatch: %v\n", err)
-			os.Exit(1)
-		}
-		fmt.Println("✅ Key matches certificate")
+    // Option 1: all the params (key, cert and cachain)
+    if keyFile != "" && certFile != "" && caFiles != "" {
+        fmt.Println("\nRunning full verification (key, cert match, and chain validation)")
+        
+        // 1. Key check
+        if err := validateKey(keyFile); err != nil {
+            fmt.Printf("❌ Key validation failed: %v\n", err)
+            os.Exit(1)
+        }
+        fmt.Println("✅ Key is valid")
 
-		// 3. Verify certificate chain
-		if err := verifyCertChain(*certFile, *caFiles); err != nil {
-			fmt.Printf("❌ Certificate chain validation failed: %v\n", err)
-			os.Exit(1)
-		}
-		fmt.Println("✅ Certificate chain is valid")
-		
-		return
+        // 2. Key and certificate match verification
+        if err := verifyKeyCertMatch(keyFile, certFile); err != nil {
+            fmt.Printf("❌ Key and certificate mismatch: %v\n", err)
+            os.Exit(1)
+        }
+        fmt.Println("✅ Key matches certificate")
+
+        // 3. Certificate chain verification
+        if err := verifyCertChain(certFile, caFiles); err != nil {
+            fmt.Printf("❌ Certificate chain validation failed: %v\n", err)
+            os.Exit(1)
+        }
+        fmt.Println("✅ Certificate chain is valid")
+        
+        return
+    }
+
+    // Option 2: Only key and certificate
+    if keyFile != "" && certFile != "" && caFiles == "" {
+        fmt.Println("\nRunning key and certificate verification only")
+        
+        if err := validateKey(keyFile); err != nil {
+            fmt.Printf("❌ Key validation failed: %v\n", err)
+            os.Exit(1)
+        }
+        fmt.Println("✅ Key is valid")
+
+        if err := verifyKeyCertMatch(keyFile, certFile); err != nil {
+            fmt.Printf("❌ Key and certificate mismatch: %v\n", err)
+            os.Exit(1)
+        }
+        fmt.Println("✅ Key matches certificate")
+        
+        return
+    }
+
+    // Option 3: Only certificate and chain
+    if certFile != "" && caFiles != "" && keyFile == "" {
+        fmt.Println("\nRunning certificate chain validation only")
+        
+        if err := verifyCertChain(certFile, caFiles); err != nil {
+            fmt.Printf("❌ Certificate chain validation failed: %v\n", err)
+            os.Exit(1)
+        }
+        fmt.Println("✅ Certificate chain is valid")
+        
+        return
+    }
+
+    // If required parameter combinations are not specified
+    fmt.Println("\nError: Invalid parameter combination")
+    fmt.Println("Valid usage patterns:")
+    fmt.Println("1. All parameters: -key KEY -cert CERT -cachain CA_CHAIN")
+    fmt.Println("2. Key and cert only: -key KEY -cert CERT")
+    fmt.Println("3. Cert and chain only: -cert CERT -cachain CA_CHAIN")
+    os.Exit(1)
+}
+
+func printCertificateInfo(certFile string) error {
+	certData, err := ioutil.ReadFile(certFile)
+	if err != nil {
+		return fmt.Errorf("failed to read certificate file: %v", err)
 	}
 
-	// Option 2: only key and cert
-	if *keyFile != "" && *certFile != "" && *caFiles == "" {
-		fmt.Println("Running key and certificate verification only")
-		
-		// 1. Validate key
-		if err := validateKey(*keyFile); err != nil {
-			fmt.Printf("❌ Key validation failed: %v\n", err)
-			os.Exit(1)
-		}
-		fmt.Println("✅ Key is valid")
-
-		// 2. Verify key and certificate match
-		if err := verifyKeyCertMatch(*keyFile, *certFile); err != nil {
-			fmt.Printf("❌ Key and certificate mismatch: %v\n", err)
-			os.Exit(1)
-		}
-		fmt.Println("✅ Key matches certificate")
-		
-		return
+	certBlock, _ := pem.Decode(certData)
+	if certBlock == nil {
+		return errors.New("failed to decode PEM certificate block")
 	}
 
-	// Option 3: only cert and cachain
-	if *certFile != "" && *caFiles != "" && *keyFile == "" {
-		fmt.Println("Running certificate chain validation only")
-		
-		// Verify certificate chain
-		if err := verifyCertChain(*certFile, *caFiles); err != nil {
-			fmt.Printf("❌ Certificate chain validation failed: %v\n", err)
-			os.Exit(1)
-		}
-		fmt.Println("✅ Certificate chain is valid")
-		
-		return
+	cert, err := x509.ParseCertificate(certBlock.Bytes)
+	if err != nil {
+		return fmt.Errorf("error parsing certificate: %v", err)
 	}
 
-	fmt.Println("Error: Invalid parameter combination")
-	fmt.Println("Valid usage patterns:")
-	fmt.Println("1. All parameters: -key KEY -cert CERT -cachain CA_CHAIN")
-	fmt.Println("2. Key and cert only: -key KEY -cert CERT")
-	fmt.Println("3. Cert and chain only: -cert CERT -cachain CA_CHAIN")
-	flag.PrintDefaults()
-	os.Exit(1)
+	fmt.Println("\nCertificate Information:")
+	fmt.Println("========================================")
+	fmt.Printf("Subject: %s\n", cert.Subject.String())
+	fmt.Printf("Issuer: %s\n", cert.Issuer.String())
+	fmt.Printf("Serial Number: %s\n", cert.SerialNumber.String())
+	fmt.Printf("Valid From: %s\n", cert.NotBefore.Format(time.RFC3339))
+	fmt.Printf("Valid Until: %s\n", cert.NotAfter.Format(time.RFC3339))
+	fmt.Printf("Is CA: %t\n", cert.IsCA)
+
+	// Print SANs
+	if len(cert.DNSNames) > 0 {
+		fmt.Println("\nSubject Alternative Names (DNS):")
+		for _, dns := range cert.DNSNames {
+			fmt.Printf("  - %s\n", dns)
+		}
+	}
+	if len(cert.EmailAddresses) > 0 {
+		fmt.Println("\nSubject Alternative Names (Email):")
+		for _, email := range cert.EmailAddresses {
+			fmt.Printf("  - %s\n", email)
+		}
+	}
+	if len(cert.IPAddresses) > 0 {
+		fmt.Println("\nSubject Alternative Names (IP):")
+		for _, ip := range cert.IPAddresses {
+			fmt.Printf("  - %s\n", ip.String())
+		}
+	}
+	if len(cert.URIs) > 0 {
+		fmt.Println("\nSubject Alternative Names (URI):")
+		for _, uri := range cert.URIs {
+			fmt.Printf("  - %s\n", uri.String())
+		}
+	}
+
+	// Print Key Usage
+	fmt.Println("\nKey Usage:")
+	if cert.KeyUsage != 0 {
+		printKeyUsage(cert.KeyUsage)
+	} else {
+		fmt.Println("  No key usage specified")
+	}
+
+	// Print Extended Key Usage
+	fmt.Println("\nExtended Key Usage:")
+	if len(cert.ExtKeyUsage) > 0 {
+		printExtendedKeyUsage(cert.ExtKeyUsage)
+	} else {
+		fmt.Println("  No extended key usage specified")
+	}
+
+	// Print Basic Constraints
+	fmt.Println("\nBasic Constraints:")
+	fmt.Printf("  Is CA: %t\n", cert.IsCA)
+	if cert.MaxPathLen > 0 || cert.MaxPathLenZero {
+		fmt.Printf("  Max Path Length: %d\n", cert.MaxPathLen)
+	}
+
+	fmt.Println("========================================")
+	return nil
+}
+
+func printKeyUsage(usage x509.KeyUsage) {
+	usages := []struct {
+		bit  x509.KeyUsage
+		name string
+	}{
+		{x509.KeyUsageDigitalSignature, "Digital Signature"},
+		{x509.KeyUsageContentCommitment, "Content Commitment"},
+		{x509.KeyUsageKeyEncipherment, "Key Encipherment"},
+		{x509.KeyUsageDataEncipherment, "Data Encipherment"},
+		{x509.KeyUsageKeyAgreement, "Key Agreement"},
+		{x509.KeyUsageCertSign, "Certificate Sign"},
+		{x509.KeyUsageCRLSign, "CRL Sign"},
+		{x509.KeyUsageEncipherOnly, "Encipher Only"},
+		{x509.KeyUsageDecipherOnly, "Decipher Only"},
+	}
+
+	for _, u := range usages {
+		if usage&u.bit != 0 {
+			fmt.Printf("  - %s\n", u.name)
+		}
+	}
+}
+
+func printExtendedKeyUsage(extUsages []x509.ExtKeyUsage) {
+	for _, extUsage := range extUsages {
+		switch extUsage {
+		case x509.ExtKeyUsageAny:
+			fmt.Println("  - Any Usage")
+		case x509.ExtKeyUsageServerAuth:
+			fmt.Println("  - TLS Web Server Authentication")
+		case x509.ExtKeyUsageClientAuth:
+			fmt.Println("  - TLS Web Client Authentication")
+		case x509.ExtKeyUsageCodeSigning:
+			fmt.Println("  - Code Signing")
+		case x509.ExtKeyUsageEmailProtection:
+			fmt.Println("  - Email Protection")
+		case x509.ExtKeyUsageIPSECEndSystem:
+			fmt.Println("  - IPSec End System")
+		case x509.ExtKeyUsageIPSECTunnel:
+			fmt.Println("  - IPSec Tunnel")
+		case x509.ExtKeyUsageIPSECUser:
+			fmt.Println("  - IPSec User")
+		case x509.ExtKeyUsageTimeStamping:
+			fmt.Println("  - Time Stamping")
+		case x509.ExtKeyUsageOCSPSigning:
+			fmt.Println("  - OCSP Signing")
+		case x509.ExtKeyUsageMicrosoftServerGatedCrypto:
+			fmt.Println("  - Microsoft Server Gated Crypto")
+		case x509.ExtKeyUsageNetscapeServerGatedCrypto:
+			fmt.Println("  - Netscape Server Gated Crypto")
+		case x509.ExtKeyUsageMicrosoftCommercialCodeSigning:
+			fmt.Println("  - Microsoft Commercial Code Signing")
+		case x509.ExtKeyUsageMicrosoftKernelCodeSigning:
+			fmt.Println("  - Microsoft Kernel Code Signing")
+		default:
+			fmt.Printf("  - Unknown Extended Key Usage (%d)\n", extUsage)
+		}
+	}
 }
 
 func validateKey(keyFile string) error {
