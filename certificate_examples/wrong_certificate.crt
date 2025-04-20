@@ -1,0 +1,104 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            24:ca:b6:99:0a:c5:8f:77:61:80:76:eb:6f:33:d8:8f:6e:33:82:dd
+        Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=RU, O=NOKOGERRA-LAB, CN=s1-sub-ca-01
+        Validity
+            Not Before: Jun 30 13:49:58 2023 GMT
+            Not After : Jun 19 13:49:58 2025 GMT
+        Subject: C=RU, ST=Moscow, O=NOKOGERRA-LAB, CN=vasyan.nokogerra.lab
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:9f:18:0d:0d:ed:53:70:4f:ee:3c:95:9b:8f:de:
+                    52:62:46:60:9f:88:31:f3:df:92:43:3c:45:11:66:
+                    ca:02:24:cc:db:52:6f:4d:d2:2d:0f:55:f3:c8:26:
+                    2e:80:80:d7:a9:6a:de:3b:f6:bf:16:02:8d:75:37:
+                    33:e7:06:d7:67:18:44:80:f6:eb:1e:9a:8b:9b:ca:
+                    08:c0:fc:18:48:b8:8a:ea:19:1f:08:22:d9:15:a0:
+                    d8:67:21:e1:9c:5a:36:35:60:b5:07:53:1b:a9:fb:
+                    6d:33:5d:ef:a1:b2:c7:4a:c1:dd:85:c1:0c:74:e2:
+                    d1:72:6d:f4:d0:3c:19:9d:c0:65:bf:f6:cc:19:0c:
+                    b8:3d:c2:a3:0f:f6:a4:f0:69:27:f9:92:52:a6:a4:
+                    b9:04:92:b3:18:bd:a5:6b:ce:7d:d0:e7:c6:39:76:
+                    41:33:34:02:02:be:36:50:ed:49:97:a8:18:71:ab:
+                    3e:22:04:b6:a1:30:bc:0f:ab:6a:df:a9:4e:4b:e5:
+                    18:a9:dd:ea:d7:f9:96:df:21:27:84:2d:d5:e2:7b:
+                    c2:56:c1:a6:8b:08:42:e8:0d:da:fd:25:c8:79:81:
+                    98:59:ce:0b:6c:2c:ac:09:73:9f:c7:68:c6:87:99:
+                    d1:2b:31:30:0e:b0:11:89:fd:77:03:8d:32:13:2c:
+                    8a:4f
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            Authority Information Access: 
+                CA Issuers - URI:http://s1-sub-ca-01.nokogerra.lab/s1-sub-ca-01.crt
+            X509v3 Authority Key Identifier: 
+                33:42:45:9B:9B:F0:83:07:96:89:6D:C2:F6:A7:A7:B6:45:55:7C:2C
+            X509v3 Basic Constraints: critical
+                CA:FALSE
+            X509v3 CRL Distribution Points: 
+                Full Name:
+                  URI:http://s1-sub-ca-01.nokogerra.lab/s1-sub-ca-01.crl
+            X509v3 Extended Key Usage: 
+                TLS Web Client Authentication, TLS Web Server Authentication
+            X509v3 Key Usage: critical
+                Digital Signature, Key Encipherment
+            X509v3 Subject Key Identifier: 
+                59:42:12:BC:88:A5:A7:D8:E9:CC:02:6F:58:DC:8F:10:4F:83:E6:48
+            X509v3 Name Constraints: 
+                Permitted:
+                  DNS:nokogerra.lab
+                  DNS:nokogerra2.lab
+                Excluded:
+                  IP:0.0.0.0/0.0.0.0
+                  IP:0:0:0:0:0:0:0:0/0:0:0:0:0:0:0:0
+            X509v3 Subject Alternative Name: 
+                DNS:vasyan.nokogerra.lab, DNS:vasyanpro.nokogerra.lab, IP Address:10.215.102.94
+    Signature Algorithm: sha256WithRSAEncryption
+    Signature Value:
+        87:5a:2c:25:e8:15:3d:32:af:b0:43:db:ec:71:ee:53:08:39:
+        4e:a5:eb:a2:1b:7b:c2:2c:10:98:d3:a2:8c:e5:cf:eb:30:53:
+        5a:eb:0d:7d:49:29:0c:f0:bb:b6:3d:ea:a6:22:d8:6f:e8:2f:
+        3b:48:ea:75:2a:f8:4a:0d:f8:f8:f0:15:25:9f:cf:92:57:9b:
+        34:60:44:ef:89:c6:11:56:1d:e2:fe:53:63:1b:1b:28:48:3b:
+        de:f0:a3:84:62:3b:c2:38:46:f9:f3:66:c6:dc:32:70:b7:88:
+        43:fc:3f:0a:c8:4c:71:fc:0d:dc:2b:4b:34:bf:15:5e:ee:d1:
+        aa:ec:32:a6:7e:45:6d:9d:6c:e8:9c:b3:ea:ac:9e:98:a6:48:
+        65:c8:76:8e:6e:07:ac:35:5b:b2:69:0c:f7:8a:12:22:1c:67:
+        4d:6a:03:1f:71:7b:2f:93:a4:c7:31:a2:2a:27:70:54:fc:d3:
+        5e:99:4d:94:38:ca:10:c8:56:45:27:db:79:94:b5:81:83:55:
+        fb:8c:03:9e:3d:58:cb:a4:2e:df:45:87:38:08:68:1f:cc:9d:
+        ab:da:9c:b9:cf:7d:3b:3b:22:ce:6c:8b:e7:73:37:e8:5f:cf:
+        ec:68:b6:15:bd:c4:4f:1d:ab:b0:fe:48:2a:3b:24:8d:cd:ee:
+        d8:af:e3:eb
+-----BEGIN CERTIFICATE-----
+MIIE2TCCA8GgAwIBAgIUJMq2mQrFj3dhgHbrbzPYj24zgt0wDQYJKoZIhvcNAQEL
+BQAwPDELMAkGA1UEBhMCUlUxFjAUBgNVBAoMDU5PS09HRVJSQS1MQUIxFTATBgNV
+BAMMDHMxLXN1Yi1jYS0wMTAeFw0yMzA2MzAxMzQ5NThaFw0yNTA2MTkxMzQ5NTha
+MFUxCzAJBgNVBAYTAlJVMQ8wDQYDVQQIDAZNb3Njb3cxFjAUBgNVBAoMDU5PS09H
+RVJSQS1MQUIxHTAbBgNVBAMMFHZhc3lhbi5ub2tvZ2VycmEubGFiMIIBIjANBgkq
+hkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnxgNDe1TcE/uPJWbj95SYkZgn4gx89+S
+QzxFEWbKAiTM21JvTdItD1XzyCYugIDXqWreO/a/FgKNdTcz5wbXZxhEgPbrHpqL
+m8oIwPwYSLiK6hkfCCLZFaDYZyHhnFo2NWC1B1MbqfttM13vobLHSsHdhcEMdOLR
+cm300DwZncBlv/bMGQy4PcKjD/ak8Gkn+ZJSpqS5BJKzGL2la8590OfGOXZBMzQC
+Ar42UO1Jl6gYcas+IgS2oTC8D6tq36lOS+UYqd3q1/mW3yEnhC3V4nvCVsGmiwhC
+6A3a/SXIeYGYWc4LbCysCXOfx2jGh5nRKzEwDrARif13A40yEyyKTwIDAQABo4IB
+uDCCAbQwTgYIKwYBBQUHAQEEQjBAMD4GCCsGAQUFBzAChjJodHRwOi8vczEtc3Vi
+LWNhLTAxLm5va29nZXJyYS5sYWIvczEtc3ViLWNhLTAxLmNydDAfBgNVHSMEGDAW
+gBQzQkWbm/CDB5aJbcL2p6e2RVV8LDAMBgNVHRMBAf8EAjAAMEMGA1UdHwQ8MDow
+OKA2oDSGMmh0dHA6Ly9zMS1zdWItY2EtMDEubm9rb2dlcnJhLmxhYi9zMS1zdWIt
+Y2EtMDEuY3JsMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDATAOBgNVHQ8B
+Af8EBAMCBaAwHQYDVR0OBBYEFFlCEryIpafY6cwCb1jcjxBPg+ZIMGAGA1UdHgRZ
+MFegIzAPgg1ub2tvZ2VycmEubGFiMBCCDm5va29nZXJyYTIubGFioTAwCocIAAAA
+AAAAAAAwIocgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwPgYDVR0R
+BDcwNYIUdmFzeWFuLm5va29nZXJyYS5sYWKCF3Zhc3lhbnByby5ub2tvZ2VycmEu
+bGFihwQK12ZeMA0GCSqGSIb3DQEBCwUAA4IBAQCHWiwl6BU9Mq+wQ9vsce5TCDlO
+peuiG3vCLBCY06KM5c/rMFNa6w19SSkM8Lu2PeqmIthv6C87SOp1KvhKDfj48BUl
+n8+SV5s0YETvicYRVh3i/lNjGxsoSDve8KOEYjvCOEb582bG3DJwt4hD/D8KyExx
+/A3cK0s0vxVe7tGq7DKmfkVtnWzonLPqrJ6YpkhlyHaObgesNVuyaQz3ihIiHGdN
+agMfcXsvk6THMaIqJ3BU/NNemU2UOMoQyFZFJ9t5lLWBg1X7jAOePVjLpC7fRYc4
+CGgfzJ2r2py5z307OyLObIvnczfoX8/saLYVvcRPHauw/kgqOySNze7Yr+Pr
+-----END CERTIFICATE-----

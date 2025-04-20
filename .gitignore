@@ -1,0 +1,28 @@
+# Ignore compiled binaries
+bin/
+
+# Ignore Go module files
+go.mod
+go.sum
+
+# Additional common Go ignores
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
