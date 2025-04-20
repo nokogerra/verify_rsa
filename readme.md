@@ -40,6 +40,7 @@ You must provide one of the following parameter combinations:
    - Checks key consistency and verifies key-certificate match.  
 3. **`-c` and `-a`**:  
    - Validates the certificate against the CA chain.</br>
+
 Use **`--nocertinfo`** to omit displaying the certificate details.
 
 ### Examples  
