@@ -39,12 +39,12 @@ You must provide one of the following parameter combinations:
 2. **`-c` and `-k`**:  
    - Checks key consistency and verifies key-certificate match.  
 3. **`-c` and `-a`**:  
-   - Validates the certificate against the CA chain.
+   - Validates the certificate against the CA chain.</br>
 Use **`--nocertinfo`** to omit displaying the certificate details.
 
 ### Examples  
 It's implied that "verify_rsa" is in $PATH dir.</br>
-**Full Verification (Key, Certificate, and Chain):**
+**Full Verification (Certificate, Key and Chain):**
 ```sh
 $ verify_rsa -c certificate.crt -k key.key -a cachain.crt 
 
@@ -74,6 +74,16 @@ Extended Key Usage:
 Basic Constraints:
   Is CA: false
 ========================================
+
+Running full verification (key, cert match, and chain validation)
+✅ Key is valid
+✅ Key matches certificate
+✅ Certificate chain is valid 
+```
+
+#### Full Verification with Split CA Chain  
+```bash
+$ verify_rsa -c certificate.crt -k key.key -a subca.crt,rootca.crt --nocertinfo 
 
 Running full verification (key, cert match, and chain validation)
 ✅ Key is valid
