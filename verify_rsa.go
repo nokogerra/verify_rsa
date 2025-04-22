@@ -160,9 +160,10 @@ func runVerification() {
     // If required parameter combinations are not specified
     fmt.Println("\nError: Invalid parameter combination")
     fmt.Println("Valid usage patterns:")
-    fmt.Println("1. All parameters: -key KEY -cert CERT -cachain CA_CHAIN")
-    fmt.Println("2. Key and cert only: -key KEY -cert CERT")
-    fmt.Println("3. Cert and chain only: -cert CERT -cachain CA_CHAIN")
+    fmt.Println("1. All parameters: -c (--cert=) CERT -k (--key=) KEY -a (--cachain=) CA_CHAIN")
+    fmt.Println("2. Key and cert only: -c CERT -k KEY")
+    fmt.Println("3. Cert and chain only: -c CERT -a CA_CHAIN")
+	fmt.Println("--nocertinfo is optional")
     os.Exit(1)
 }
 
